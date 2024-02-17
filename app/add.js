@@ -93,50 +93,37 @@ const AddOptionsPopup = ({ handleClose }) => {
             />
           </svg>
         </button>
-        <div className="flex items-center flex-col mt-4">
-          <form onSubmit={handleSubmit} className="flex items-center space-x-4">
-            <span className="cursor-pointer">
-              <h1 className="font-bold text-black text-lg">1. Add Image 📷</h1>
-              <input
-                id="imageInput"
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-            </span>
 
-            <span className="flex items-center px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 cursor-pointer">
-              <span className="mr-2">Choose File</span>
-              📂
-            </span>
-
+        <div className="flex space-x-4 mt-4">
+          <form onSubmit={handleSubmit}>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="block mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+            />
             <button
-              className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700"
+              className="block mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
               type="submit"
-              onClick={handleSubmit}
             >
-              Submit
+              Submit Image
             </button>
           </form>
 
-          <span className="cursor-pointer">
-            <h1 className="font-bold text-black text-lg mt-2">2. Record 🎤</h1>
-            <button
-              className={`mt-2 px-4 py-2 ${
-                recordOption === "audio" ? "bg-green-500" : "bg-blue-500"
-              } text-white rounded hover:bg-blue-700`}
-              onClick={() => toggleRecordOption("audio")}
-            >
-              Start Recording
-            </button>
-            {recordOption === "audio" && <AudioRecorder />}
-          </span>
+          <button
+            className={`block mb-2 px-4 py-2 ${
+              recordOption === "audio" ? "bg-green-500" : "bg-blue-500"
+            } text-white rounded hover:bg-blue-700`}
+            onClick={toggleRecordOption("audio")}
+          >
+            Record
+          </button>
+          {recordOption === "audio" && <AudioRecorder />}
         </div>
 
         <div>
           <textarea
-            className="block w-3/4 p-2 border border-gray-300 bg-slate-50 text-black resize-none"
+            className="block w-full p-2 border border-gray-300 bg-slate-50 text-black resize-none"
             placeholder="Description"
             value={description}
             onChange={handleDescriptionChange}
