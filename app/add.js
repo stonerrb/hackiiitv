@@ -71,6 +71,11 @@ const AddOptionsPopup = ({ handleClose }) => {
     }
   };
 
+  const handleDescriptionSubmit = (event) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+    // Your code to handle the description submission
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-black">
       <div className="bg-white p-4 rounded shadow-lg relative flex flex-col items-center">
@@ -93,8 +98,8 @@ const AddOptionsPopup = ({ handleClose }) => {
             />
           </svg>
         </button>
-        <div className="flex items-center flex-col mt-4">
-          <form onSubmit={handleSubmit} className="flex items-center space-x-4">
+        <div className="flex flex-col items-center mt-4">
+          <form onSubmit={handleSubmit} className="flex items-start space-x-4">
             <span className="cursor-pointer">
               <h1 className="font-bold text-black text-lg">1. Add Image 📷</h1>
               <input
@@ -106,43 +111,73 @@ const AddOptionsPopup = ({ handleClose }) => {
               />
             </span>
 
-            <span className="flex items-center px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 cursor-pointer">
+            <label
+              htmlFor="imageInput"
+              className="flex items-center px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 cursor-pointer"
+            >
               <span className="mr-2">Choose File</span>
               📂
-            </span>
+            </label>
 
             <button
               className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700"
               type="submit"
-              onClick={handleSubmit}
             >
               Submit
             </button>
           </form>
 
-          <span className="cursor-pointer">
-            <h1 className="font-bold text-black text-lg mt-2">2. Record 🎤</h1>
-            <button
-              className={`mt-2 px-4 py-2 ${
-                recordOption === "audio" ? "bg-green-500" : "bg-blue-500"
-              } text-white rounded hover:bg-blue-700`}
-              onClick={() => toggleRecordOption("audio")}
-            >
-              Start Recording
-            </button>
-            {recordOption === "audio" && <AudioRecorder />}
+          <span className="cursor-pointer flex items-center justify-between w-full mt-4">
+            <h1 className="font-bold text-black text-lg">2. Record 🎤</h1>
+            <div className="flex items-center">
+              <button
+                className={`px-4 py-2 ${
+                  recordOption === "audio" ? "bg-green-500" : "bg-blue-500"
+                } text-white rounded hover:bg-blue-700`}
+                style={{ marginLeft: "-5px" }}
+                onClick={() => {
+                  if (recordOption === "audio") {
+                    // Logic to start recording (you may need to integrate a library or service)
+                    console.log("Recording started");
+                  }
+                  toggleRecordOption("audio")();
+                }}
+              >
+                {recordOption === "audio"
+                  ? "Stop Recording"
+                  : "Start Recording"}
+              </button>
+              {recordOption === "audio" && <AudioRecorder />}
+            </div>
           </span>
-        </div>
 
-        <div>
-          <textarea
-            className="block w-3/4 p-2 border border-gray-300 bg-slate-50 text-black resize-none"
-            placeholder="Description"
-            value={description}
-            onChange={handleDescriptionChange}
-            style={{ height: "150px" }}
-          ></textarea>
-          {/* You can style the text area as needed */}
+          <div className="mt-4 w-full">
+            <div className="flex items-center justify-between w-full">
+              <h1 className="font-bold text-black text-lg">
+                3. Add Description📃
+              </h1>
+
+              <div className="flex-grow">
+                <textarea
+                  className="block w-full p-2 border border-gray-300 bg-slate-50 text-black resize-none"
+                  placeholder="Description"
+                  value={description}
+                  onChange={handleDescriptionChange}
+                  style={{ height: "100px" }}
+                ></textarea>
+              </div>
+            </div>
+
+            <div className="mt-4 flex justify-center">
+              <button
+                className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700"
+                type="submit"
+                onClick={handleDescriptionSubmit}
+              >
+                Submit
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
