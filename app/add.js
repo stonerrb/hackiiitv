@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import AudioRecorder from "./utils/AudioRecorder.jsx";
+const mimeType = "audio/webm";
 
 const Add = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -35,69 +37,42 @@ const Add = () => {
 
 const AddOptionsPopup = ({ handleClose }) => {
   const [description, setDescription] = useState("");
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [recordedChunks, setRecordedChunks] = useState([]);
-  const audioRef = useRef(null);
-  const [showPopup, setShowPopup] = useState(false);
+  const [recordOption, setRecordOption] = useState("video");
+  const [selectedFile, setSelectedFile] = useState(null);
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      setMediaRecorder(recorder);
-
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          setRecordedChunks((prevChunks) => [...prevChunks, event.data]);
-        }
-      };
-
-      recorder.start();
-    } catch (err) {
-      console.error("The following error occurred:", err);
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorder) {
-      mediaRecorder.stop();
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunks, { type: "audio/mp4" });
-
-        // Read the Blob as a binary string
-        const reader = new FileReader();
-        reader.readAsBinaryString(blob);
-        reader.onloadend = () => {
-          // Convert the binary string to Base64
-          const base64Audio = btoa(reader.result);
-
-          // Display the Base64 audio on the screen
-          // This could be done by setting a state variable or directly manipulating the DOMf
-          if (audioRef.current) {
-            audioRef.current.src = `data:audio/mp4;base64,${base64Audio}`;
-            audioRef.current.controls = true;
-          }
-
-          console.log("Audio Blob converted to Base64:", base64Audio);
-        };
-        setShowPopup(true);
-        // Reset the mediaRecorder and recordedChunks
-        setMediaRecorder(null);
-        setRecordedChunks([]);
-      };
-    }
-  };
-
-  const closePopup = () => {
-    setShowPopup(false);
+  const toggleRecordOption = (type) => {
+    return () => {
+      setRecordOption(type);
+    };
   };
 
   const handleDescriptionChange = (event) => {
     setDescription(event.target.value);
   };
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+    if (selectedFile && selectedFile.type.startsWith("image/")) {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        console.log("Base64 String Image:", reader.result);
+        handleClose("image", description);
+      };
+
+      reader.readAsDataURL(selectedFile);
+    } else {
+      console.error("Please select an image file.");
+    }
+  };
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center">
+    <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-black">
       <div className="bg-white p-4 rounded shadow-lg relative flex flex-col items-center">
         <button
           className="absolute top-1 right-2 text-gray-600"
@@ -120,41 +95,30 @@ const AddOptionsPopup = ({ handleClose }) => {
         </button>
 
         <div className="flex space-x-4 mt-4">
+          <form onSubmit={handleSubmit}>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="block mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+            />
+            <button
+              className="block mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+              type="submit"
+            >
+              Submit Image
+            </button>
+          </form>
+
           <button
-            className="block mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-            onClick={() => handleClose("image", description)}
+            className={`block mb-2 px-4 py-2 ${
+              recordOption === "audio" ? "bg-green-500" : "bg-blue-500"
+            } text-white rounded hover:bg-blue-700`}
+            onClick={toggleRecordOption("audio")}
           >
-            Add Image
+            Record
           </button>
-          <div className="flex flex-row justify-between">
-            <button
-              className="block mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-              onClick={startRecording}
-            >
-              Start
-            </button>
-            <button
-              className="block mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-              onClick={stopRecording}
-            >
-              Stop
-            </button>
-          </div>
-          {showPopup && (
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-              <div className="bg-white p-4 rounded shadow-lg">
-                <h2 className="text-center text-black">
-                  Recording saved successfully!
-                </h2>
-                <button
-                  className="block mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
-                  onClick={closePopup}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          )}
+          {recordOption === "audio" && <AudioRecorder />}
         </div>
 
         <div>
