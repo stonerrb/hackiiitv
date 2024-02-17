@@ -9,8 +9,11 @@ const Add = () => {
     setShowPopup(!showPopup);
   };
 
-  const handleOptionClick = (option) => {
-    console.log(`Adding ${option}`);
+  const handleOptionClick = (option, description) => {
+    if (option !== null) {
+      console.log(`Adding ${option}`);
+      console.log(`Description: ${description}`);
+    }
     setShowPopup(false);
   };
 
@@ -31,6 +34,7 @@ const Add = () => {
 };
 
 const AddOptionsPopup = ({ handleClose }) => {
+  const [description, setDescription] = useState("");
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [recordedChunks, setRecordedChunks] = useState([]);
   const audioRef = useRef(null);
@@ -88,54 +92,81 @@ const AddOptionsPopup = ({ handleClose }) => {
     setShowPopup(false);
   };
 
+  const handleDescriptionChange = (event) => {
+    setDescription(event.target.value);
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center">
-      <div className="flex flex-col justify-between bg-white p-4 rounded shadow-lg">
+      <div className="bg-white p-4 rounded shadow-lg relative flex flex-col items-center">
         <button
-          className="absolute top-2 right-2 text-gray-600"
-          onClick={() => handleClose(null)}
+          className="absolute top-1 right-2 text-gray-600"
+          onClick={() => handleClose(null, description)}
         >
-          {/* SVG for close icon */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
         </button>
-        <div className="flex flex-row justify-between">
+
+        <div className="flex space-x-4 mt-4">
           <button
             className="block mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-            onClick={startRecording}
+            onClick={() => handleClose("image", description)}
           >
-            Start
+            Add Image
           </button>
-          <button
-            className="block mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-            onClick={stopRecording}
-          >
-            Stop
-          </button>
-        </div>
-        {showPopup && (
-          <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-white p-4 rounded shadow-lg">
-              <h2 className="text-center text-black">Recording saved successfully!</h2>
-              <button
-                className="block mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
-                onClick={closePopup}
-              >
-                Close
-              </button>
-            </div>
+          <div className="flex flex-row justify-between">
+            <button
+              className="block mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+              onClick={startRecording}
+            >
+              Start
+            </button>
+            <button
+              className="block mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+              onClick={stopRecording}
+            >
+              Stop
+            </button>
           </div>
-        )}
-        <button
-          className="block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-          onClick={() => handleClose("description")}
-        >
-          Add Description
-        </button>
-        <button
-          className="block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-          onClick={() => handleClose("image")}
-        >
-          Add Image
-        </button>
+          {showPopup && (
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div className="bg-white p-4 rounded shadow-lg">
+                <h2 className="text-center text-black">
+                  Recording saved successfully!
+                </h2>
+                <button
+                  className="block mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
+                  onClick={closePopup}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <textarea
+            className="block w-full p-2 border border-gray-300 bg-slate-50 text-black resize-none"
+            placeholder="Description"
+            value={description}
+            onChange={handleDescriptionChange}
+            style={{ height: "150px" }}
+          ></textarea>
+          {/* You can style the text area as needed */}
+        </div>
       </div>
     </div>
   );
