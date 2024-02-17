@@ -47,6 +47,15 @@ const AudioRecorder = () => {
       const audioBlob = new Blob(audioChunks, { type: mimeType });
       const audioUrl = URL.createObjectURL(audioBlob);
       setAudio(audioUrl);
+
+      // Create a FileReader instance to read the blob as a base64 string
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // Log the base64 string
+        console.log("Base64 Audio:",reader.result);
+      };
+      reader.readAsDataURL(audioBlob);
+
       setAudioChunks([]);
     };
   };

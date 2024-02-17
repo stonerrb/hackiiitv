@@ -38,6 +38,7 @@ const Add = () => {
 const AddOptionsPopup = ({ handleClose }) => {
   const [description, setDescription] = useState("");
   const [recordOption, setRecordOption] = useState("video");
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const toggleRecordOption = (type) => {
     return () => {
@@ -47,6 +48,27 @@ const AddOptionsPopup = ({ handleClose }) => {
 
   const handleDescriptionChange = (event) => {
     setDescription(event.target.value);
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+    if (selectedFile && selectedFile.type.startsWith("image/")) {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        console.log("Base64 String Image:", reader.result);
+        handleClose("image", description);
+      };
+
+      reader.readAsDataURL(selectedFile);
+    } else {
+      console.error("Please select an image file.");
+    }
   };
 
   return (
@@ -73,18 +95,24 @@ const AddOptionsPopup = ({ handleClose }) => {
         </button>
 
         <div className="flex space-x-4 mt-4">
-          <button
-            className="block mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-            onClick={() => handleClose("image", description)}
-          >
-            Add Image
-          </button>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="block mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+            />
+            <button
+              className="block mb-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+              type="submit"
+            >
+              Submit Image
+            </button>
+          </form>
 
           <button
             className={`block mb-2 px-4 py-2 ${
-              recordOption === "audio"
-                ? "bg-green-500"
-                : "bg-blue-500"
+              recordOption === "audio" ? "bg-green-500" : "bg-blue-500"
             } text-white rounded hover:bg-blue-700`}
             onClick={toggleRecordOption("audio")}
           >
