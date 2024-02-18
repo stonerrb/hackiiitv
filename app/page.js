@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Add from "./add";
 import Image from "next/image";
@@ -5,7 +7,7 @@ import Image from "next/image";
 function ItemCategoryRow({ category }) {
   return (
     <tr>
-      <th className="bg-gray-200 p-2" colSpan="9">
+      <th className="bg-gray-200 p-2" colSpan="10">
         {category}
       </th>
     </tr>
@@ -15,34 +17,33 @@ function ItemCategoryRow({ category }) {
 function ItemTable({ items }) {
   const rows = [];
   let lastCategory = null;
+  let count = 1; // Initialize a count variable
 
-  if (items && items.length > 0) {
-    items.forEach((item) => {
-      if (item && item.Name) {
-        if (item.Name !== lastCategory) {
-          rows.push(<ItemCategoryRow key={item.Name} />);
+  items.forEach((item) => {
+    if (item && item.categories && item.categories.length > 0) {
+      item.categories.forEach((category) => {
+        if (category !== lastCategory) {
+          rows.push(<ItemCategoryRow key={category} category={category} />);
         }
-        lastCategory = item.Name;
-      }
-      let count = 1; // Initialize a count variable
+        lastCategory = category;
+      });
+    }
 
-      rows.push(
-        items.map((item, index) => (
-          <tr key={item.Barcode}>
-            <td className="p-2 text-center">{count++}</td>
-            <td className="p-2 text-center">{item.Name}</td>
-            <td className="p-2 text-center">{item.Description}</td>
-            <td className="p-2 text-center">{item.Quantity}</td>
-            <td className="p-2 text-center">{item.Weight}</td>
-            <td className="p-2 text-center">{item.Barcode}</td>
-            <td className="p-2 text-center">{item.Manufacturer}</td>
-            <td className="p-2 text-center">{item.MFDate}</td>
-            <td className="p-2 text-center">{item.ExpDate}</td>
-          </tr>
-        ))
-      );
-    });
-  }
+    rows.push(
+      <tr key={item.barcode}>
+        <td className="p-2 text-center">{count++}</td>
+        <td className="p-2 text-center">{item.product_name}</td>
+        <td className="p-2 text-center">{item.description}</td>
+        <td className="p-2 text-center">{item.quantity}</td>
+        <td className="p-2 text-center">{item.price}</td>
+        <td className="p-2 text-center">{item.net_weight}</td>
+        <td className="p-2 text-center">{item.barcode}</td>
+        <td className="p-2 text-center">{item.manufacturer_brand}</td>
+        <td className="p-2 text-center">{item.manufacturing_date}</td>
+        <td className="p-2 text-center">{item.expiration_date}</td>
+      </tr>
+    );
+  });
 
   return (
     <table className="w-full border-collapse border">
@@ -52,6 +53,7 @@ function ItemTable({ items }) {
           <th className="p-2">Item Name</th>
           <th className="p-2">Description</th>
           <th className="p-2">Quantity</th>
+          <th className="p-2">Price</th>
           <th className="p-2">Net Weight</th>
           <th className="p-2">Barcode</th>
           <th className="p-2">Manufacturer</th>
@@ -72,20 +74,6 @@ function ItemBox({ list }) {
   );
 }
 
-const items = [
-  {
-    Name: "Biscuit",
-    Description: "Biscuit",
-    Quantity: "100",
-    Price: "10",
-    Weight: "100",
-    Barcode: "123456",
-    Manufacturer: "ABC",
-    MFDate: "2021-01-01",
-    ExpDate: "2021-12-31",
-  },
-];
-
 const Topbar = () => {
   return (
     <div className="flex justify-center items-center h-full">
@@ -96,12 +84,33 @@ const Topbar = () => {
 };
 
 export default function Home() {
+  const [items, setItems] = React.useState([]);
+
+  const handleFetchedData = (items) => {
+    // Map the fetched items into the desired format
+    const transformedItem = [{
+      product_name: items.product_name || "",
+      description: items.description || "",
+      quantity: items.quantity || "",
+      price: items.price || "",
+      net_weight: items.net_weight || "",
+      barcode: items.barcode || "",
+      manufacturer_brand: items.manufacturer_brand,
+      manufacturing_date: items.manufacturing_date || "",
+      expiration_date: items.expiration_date || "",
+    }];
+
+    // Set the transformed items to the state
+    setItems(transformedItem);
+  };
+
+  // console.log(items);
+
   return (
     <React.Fragment>
       <Topbar />
       <ItemBox list={items} />
-      <Add />
+      <Add onFetchData={handleFetchedData} />
     </React.Fragment>
   );
 }
-

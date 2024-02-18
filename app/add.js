@@ -4,7 +4,7 @@ import React, { useState, useRef } from "react";
 import AudioRecorder from "./utils/AudioRecorder.jsx";
 const mimeType = "audio/webm";
 
-const Add = () => {
+const Add = ({onFetchData}) => {
   const [showPopup, setShowPopup] = useState(false);
 
   const handlePopup = () => {
@@ -30,12 +30,12 @@ const Add = () => {
         </button>
       </div>
 
-      {showPopup && <AddOptionsPopup handleClose={handleOptionClick} />}
+      {showPopup && <AddOptionsPopup handleClose={handleOptionClick} onFetchData={onFetchData}/>}
     </React.Fragment>
   );
 };
 
-const AddOptionsPopup = ({ handleClose }) => {
+const AddOptionsPopup = ({ handleClose, onFetchData }) => {
   const [description, setDescription] = useState("");
   const [recordOption, setRecordOption] = useState("video");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -98,7 +98,8 @@ const AddOptionsPopup = ({ handleClose }) => {
       .then((response) => response.json())
       .then((data) => {
         // Handle the response from the server
-        console.log(data.barcode);
+        console.log(data);
+        onFetchData(data);
       })
       .catch((error) => {
         // Handle any errors
@@ -158,7 +159,7 @@ const AddOptionsPopup = ({ handleClose }) => {
             <h1 className="font-bold text-black text-lg">Select Language</h1>
             <select
               className="px-4 py-2 bg-white text-black rounded hover:bg-gray-200 cursor-pointer"
-              // onChange={handleLanguageChange}
+              onChange={handleLanguageChange}
             >
               <option value="">Select...</option>
               <option value="hi">Hi</option>
