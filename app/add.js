@@ -40,6 +40,7 @@ const AddOptionsPopup = ({ handleClose }) => {
   const [recordOption, setRecordOption] = useState("video");
   const [selectedFile, setSelectedFile] = useState(null);
   const [audioBase64, setAudioBase64] = useState(null);
+  const [selectedLanguage, setSelectedLanguage] = useState('');
 
   const toggleRecordOption = (type) => {
     return () => {
@@ -72,37 +73,37 @@ const AddOptionsPopup = ({ handleClose }) => {
     }
   };
 
+  const handleLanguageChange = (event) => {
+    setSelectedLanguage(event.target.value);
+  } 
+
   const handleSubmitAll = () => {
     const formData = new FormData();
     formData.append("text", description);
+    formData.append("lang", selectedLanguage); 
     if (selectedFile) {
       formData.append("image", selectedFile);
     }
     if (audioBase64) {
-      formData.append('audio', audioBase64);
+      formData.append("audio", audioBase64);
     }
-
-  // console.log(formData.get('audio'),formData.get('image'),formData.get('text'));
 
     fetch("http://127.0.0.1:5000/get-result", {
       method: "POST",
       body: formData,
-      headers:{
-        'Accept': 'multipart/form-data'
-      }
+      headers: {
+        Accept: "multipart/form-data",
+      },
     })
       .then((response) => response.json())
       .then((data) => {
         // Handle the response from the server
         console.log(data.barcode);
-
       })
       .catch((error) => {
         // Handle any errors
         console.error("Error:", error);
       });
-
-
   };
 
   return (
@@ -130,7 +131,12 @@ const AddOptionsPopup = ({ handleClose }) => {
         <div className="flex flex-col items-center mt-4">
           <form onSubmit={handleSubmit} className="flex items-start space-x-4">
             <span className="cursor-pointer">
-              <h1 className="font-bold text-black text-lg" style={{ marginLeft: "-100px"}}>1. Add Image 📷</h1>
+              <h1
+                className="font-bold text-black text-lg"
+                style={{ marginLeft: "-100px" }}
+              >
+                1. Add Image 📷
+              </h1>
               <input
                 id="imageInput"
                 type="file"
@@ -148,12 +154,36 @@ const AddOptionsPopup = ({ handleClose }) => {
             </label>
           </form>
 
+          <div className="flex items-center justify-between w-full mt-4">
+            <h1 className="font-bold text-black text-lg">Select Language</h1>
+            <select
+              className="px-4 py-2 bg-white text-black rounded hover:bg-gray-200 cursor-pointer"
+              // onChange={handleLanguageChange}
+            >
+              <option value="">Select...</option>
+              <option value="hi">Hi</option>
+              <option value="mr">Mr</option>
+              <option value="pa">Pa</option>
+              <option value="gu">Gu</option>
+              <option value="kn">Kn</option>
+              <option value="ur">Ur</option>
+              <option value="ne">Ne</option>
+              <option value="ta">Ta</option>
+              <option value="ml">Ml</option>
+              <option value="te">Te</option>
+              <option value="en">En</option>
+              <option value="or">Or</option>
+              <option value="nb">Nb</option>
+              <option value="sa">Sa</option>
+            </select>
+          </div>
+
           <span className="cursor-pointer flex items-center justify-between w-full mt-4">
             <h1 className="font-bold text-black text-lg">2. Record 🎤 </h1>
-            <div className="flex items-center" style={{ marginLeft: "20px"}}>
+            <div className="flex items-center" style={{ marginLeft: "20px" }}>
               <button
                 className={`px-4 py-2 ${
-                  recordOption === "audio" ? "bg-white "  : "bg-blue-500" //yaha pe
+                  recordOption === "audio" ? "bg-white " : "bg-blue-500" //yaha pe
                 } text-white rounded hover:bg-blue-700`}
                 style={{ marginLeft: "-5px" }}
                 onClick={() => {
@@ -163,11 +193,11 @@ const AddOptionsPopup = ({ handleClose }) => {
                   toggleRecordOption("audio")();
                 }}
               >
-                {recordOption === "audio"
-                  ? ""
-                  : "Start Recording"}
+                {recordOption === "audio" ? "" : "Start Recording"}
               </button>
-              {recordOption === "audio" && <AudioRecorder onAudioData={setAudioBase64}/>}
+              {recordOption === "audio" && (
+                <AudioRecorder onAudioData={setAudioBase64} />
+              )}
             </div>
           </span>
 
