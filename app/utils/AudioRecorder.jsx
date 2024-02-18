@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 
-const AudioRecorder = () => {
+const AudioRecorder = ({ onAudioData }) => {
   const [permission, setPermission] = useState(false);
   const mediaRecorder = useRef(null);
   const [recordingStatus, setRecordingStatus] = useState("inactive");
@@ -52,7 +52,8 @@ const AudioRecorder = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         // Log the base64 string
-        console.log("Base64 Audio:",reader.result);
+        // console.log("Base64 Audio:",reader.result);
+        onAudioData(reader.result);
       };
       reader.readAsDataURL(audioBlob);
 
@@ -64,7 +65,7 @@ const AudioRecorder = () => {
     <div className="container mx-auto p-8">
       <h2 className="text-2xl font-bold mb-4">Audio Recorder</h2>
       <main>
-        <div className="audio-controls space-y-4">
+        <div className="audio-controls space-y-4" >
           {!permission && (
             <button
               onClick={getMicrophonePermission}
@@ -75,7 +76,7 @@ const AudioRecorder = () => {
             </button>
           )}
           {permission && recordingStatus === "inactive" && (
-            <button
+            <button 
               onClick={startRecording}
               className="bg-green-500 text-white px-4 py-2 rounded"
               type="button"

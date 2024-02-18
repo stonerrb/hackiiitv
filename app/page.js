@@ -94,6 +94,7 @@ const Topbar = () => {
     </div>
   );
 };
+
 export default function Home() {
   return (
     <React.Fragment>
@@ -103,3 +104,4 @@ export default function Home() {
     </React.Fragment>
   );
 }
+
